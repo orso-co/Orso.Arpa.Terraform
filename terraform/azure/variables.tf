@@ -51,7 +51,7 @@ variable "backendconfig" {
             name = string
             address = string
             email = string
-            phne = string
+            phone = string
         })
   })
 }   

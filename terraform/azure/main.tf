@@ -1,7 +1,7 @@
 terraform {
   backend "azurerm" {
-    resource_group_name  = "${var.club}-global-rg"
-    storage_account_name = "${var.club}globalsa"
+    resource_group_name  = "orso-global-rg" // this has to be adapted manually if used for a different club
+    storage_account_name = "orsoglobalsa" // this has to be adapted manually if used for a different club
     container_name       = "tfstate"
   }
 }
@@ -106,7 +106,7 @@ resource "azurerm_app_service" "arpa" {
     "IdentityConfiguration:MaxFailedLoginAttempts" = var.backendconfig.identityConfig.maxFailedLoginAttempts
     "IdentityConfiguration:EmailConfirmationTokenExpiryInDays" = var.backendconfig.identityConfig.emailConfirmationTokenExpiryInDays
     "IdentityConfiguration:DataProtectionTokenExpiryInHours" = var.backendconfig.identityConfig.dataProtectionTokenExpiryInHours
-    "CorsConfiguration:AllowedOrigins:0" = azurerm_storage_account.orsoarpadev.primary_blob_endpoint
+    "CorsConfiguration:AllowedOrigins:0" = azurerm_storage_account.arpa.primary_blob_endpoint
     "ClubConfiguration:Name" = var.backendconfig.clubConfig.name
     "ClubConfiguration:Address" = var.backendconfig.clubConfig.address
     "ClubConfiguration:Email" = var.backendconfig.clubConfig.email

@@ -6,7 +6,7 @@ backendconfig = {
     address = "Schwarzwaldstr. 9-11, 79117 Freiburg"
     email = "mail@orso.co"
     name = "ORSO – Orchestra & Choral Society Freiburg | Berlin e. V."
-    phne = "+4907617073203"
+    phone = "+4907617073203"
   }
   emailConfig = {
     defaultSubject = "Message from ARPA"
