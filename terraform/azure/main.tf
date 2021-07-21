@@ -14,7 +14,7 @@ module "resource_group_name" {
 }
 
 module "app_service_plan_name" {
-  source   = "gsoft-inc/naming/azurerm//modules/web/web_app_name" // app service plan name is limited to 40 characters
+  source   = "../../modules/app_service_plan_name"
   name     = "infra"
   prefixes = ["orso", "arpa", "dev"]
   suffixes = ["asp"]
