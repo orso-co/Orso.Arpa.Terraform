@@ -1,7 +1,7 @@
 terraform {
   backend "azurerm" {
-    resource_group_name  = "orso-global-rg"
-    storage_account_name = "orsoglobalsa"
+    resource_group_name  = "${var.club}-global-rg"
+    storage_account_name = "${var.club}globalsa"
     container_name       = "tfstate"
   }
 }
@@ -9,41 +9,41 @@ terraform {
 module "resource_group_name" {
   source   = "gsoft-inc/naming/azurerm//modules/general/resource_group"
   name     = "infra"
-  prefixes = ["orso", "arpa", "dev"]
+  prefixes = [var.club, "arpa", var.environment]
   suffixes = ["rg"]
 }
 
 module "app_service_plan_name" {
   source   = "../../modules/app_service_plan_name"
   name     = "infra"
-  prefixes = ["orso", "arpa", "dev"]
+  prefixes = [var.club, "arpa", var.environment]
   suffixes = ["asp"]
 }
 
 module "app_service_name" {
   source   = "gsoft-inc/naming/azurerm//modules/web/web_app"
   name     = "infra"
-  prefixes = ["orso", "arpa", "dev"]
+  prefixes = [var.club, "arpa", var.environment]
   suffixes = ["as"]
 }
 
 module "storage_account_name" {
   source   = "gsoft-inc/naming/azurerm//modules/storage/storage_account"
   name     = "frontend"
-  prefixes = ["orso", "arpa", "dev"]
+  prefixes = [var.club, "arpa", var.environment]
   separator = ""
   suffixes = ["sa"]
 }
 
-resource "azurerm_resource_group" "orsoarpadev" {
+resource "azurerm_resource_group" "arpa" {
   name     = module.resource_group_name.result
-  location = "Germany West Central"
+  location = var.location
 }
 
-resource "azurerm_storage_account" "orsoarpadev" {
+resource "azurerm_storage_account" "arpa" {
   name                     = module.storage_account_name.result
-  resource_group_name      = azurerm_resource_group.orsoarpadev.name
-  location                 = azurerm_resource_group.orsoarpadev.location
+  resource_group_name      = azurerm_resource_group.arpa.name
+  location                 = azurerm_resource_group.arpa.location
   account_tier             = "Standard"
   account_replication_type = "LRS"
   static_website {
@@ -52,14 +52,14 @@ resource "azurerm_storage_account" "orsoarpadev" {
   }
 
   tags = {
-    environment = "dev"
+    environment = var.environment
   }
 }
 
-resource "azurerm_app_service_plan" "orsoarpadev" {
+resource "azurerm_app_service_plan" "arpa" {
   name                = module.app_service_plan_name.result
-  location            = azurerm_resource_group.orsoarpadev.location
-  resource_group_name = azurerm_resource_group.orsoarpadev.name
+  location            = azurerm_resource_group.arpa.location
+  resource_group_name = azurerm_resource_group.arpa.name
 
   sku {
     tier = "Free"
@@ -67,15 +67,15 @@ resource "azurerm_app_service_plan" "orsoarpadev" {
   }
 
   tags = {
-    environment = "dev"
+    environment = var.environment
   }
 }
 
-resource "azurerm_app_service" "orsoarpadev" {
+resource "azurerm_app_service" "arpa" {
   name                = module.app_service_name.result
-  location            = azurerm_resource_group.orsoarpadev.location
-  resource_group_name = azurerm_resource_group.orsoarpadev.name
-  app_service_plan_id = azurerm_app_service_plan.orsoarpadev.id
+  location            = azurerm_resource_group.arpa.location
+  resource_group_name = azurerm_resource_group.arpa.name
+  app_service_plan_id = azurerm_app_service_plan.arpa.id
   https_only = true
 
   site_config {
@@ -86,31 +86,31 @@ resource "azurerm_app_service" "orsoarpadev" {
   }
 
   app_settings = {
-    "Logging:IncludeScopes" = "false"
-    "Logging:LogLevel:Default" = "Trace"
-    "Logging:LogLevel:Microsoft" = "Warning"
-    "Logging:LogLevel:Microsoft.Hosting.Lifetime" = "Information"
-    "Logging:LogLevel:Microsoft.EntityFrameworkCore.Database.Command" = "Information"
-    "EmailConfiguration:From" = "dev@arpa.orso.co"
-    "EmailConfiguration:SmtpServer" = "localhost"
-    "EmailConfiguration:Port" = "25"
-    "EmailConfiguration:Username" = ""
-    "EmailConfiguration:Password" = ""
-    "EmailConfiguration:DefaultSubject" = "Message from ARPA"
-    "JwtConfiguration:TokenKey" = ""
-    "JwtConfiguration:Issuer" = "https://localhost:5001"
-    "JwtConfiguration:Audience" = "https://localhost:5001"
-    "JwtConfiguration:AccessTokenExpiryInMinutes" = "10"
-    "JwtConfiguration:RefreshTokenExpiryInDays" = "3"
-    "IdentityConfiguration:LockoutExpiryInMinutes" = "10"
-    "IdentityConfiguration:MaxFailedLoginAttempts" = "3"
-    "IdentityConfiguration:EmailConfirmationTokenExpiryInDays" = "3"
-    "IdentityConfiguration:DataProtectionTokenExpiryInHours" = "2"
-    "CorsConfiguration:AllowedOrigins:0" = "http://localhost:4200" // ToDo: Add storage url
-    "ClubConfiguration:Name" = "ORSO – Orchestra & Choral Society Freiburg | Berlin e. V."
-    "ClubConfiguration:Address" = "Schwarzwaldstr. 9-11, 79117 Freiburg"
-    "ClubConfiguration:Email" = "mail@orso.co"
-    "ClubConfiguration:Phone" = "+4907617073203"
+    "Logging:IncludeScopes" = var.backendconfig.logConfig.includeScopes
+    "Logging:LogLevel:Default" = var.backendconfig.logConfig.logLevel.default
+    "Logging:LogLevel:Microsoft" = var.backendconfig.logConfig.logLevel.microsoft
+    "Logging:LogLevel:Microsoft.Hosting.Lifetime" = var.backendconfig.logConfig.logLevel.microsoftHostingLifetime
+    "Logging:LogLevel:Microsoft.EntityFrameworkCore.Database.Command" = var.backendconfig.logConfig.logLevel.microsoftEntityFrameworkCoreDatabaseCommand
+    "EmailConfiguration:From" = var.backendconfig.emailConfig.from
+    "EmailConfiguration:SmtpServer" = var.backendconfig.emailConfig.smtpServer
+    "EmailConfiguration:Port" = var.backendconfig.emailConfig.port
+    "EmailConfiguration:Username" = var.backendconfig.emailConfig.userName
+    "EmailConfiguration:Password" = var.backendconfig.emailConfig.password
+    "EmailConfiguration:DefaultSubject" = var.backendconfig.emailConfig.defaultSubject
+    "JwtConfiguration:TokenKey" = var.backendconfig.jwtConfig.tokenKey
+    "JwtConfiguration:Issuer" = "https://localhost:5001" // ToDo: Take from app service / custom domain
+    "JwtConfiguration:Audience" = "https://localhost:5001" // ToDo: Take from app service / custom domain
+    "JwtConfiguration:AccessTokenExpiryInMinutes" = var.backendconfig.jwtConfig.accessTokenExpiryInMinutes
+    "JwtConfiguration:RefreshTokenExpiryInDays" = var.backendconfig.jwtConfig.refreshTokenExpiryInDays
+    "IdentityConfiguration:LockoutExpiryInMinutes" = var.backendconfig.identityConfig.lockoutExpiryInMinutes
+    "IdentityConfiguration:MaxFailedLoginAttempts" = var.backendconfig.identityConfig.maxFailedLoginAttempts
+    "IdentityConfiguration:EmailConfirmationTokenExpiryInDays" = var.backendconfig.identityConfig.emailConfirmationTokenExpiryInDays
+    "IdentityConfiguration:DataProtectionTokenExpiryInHours" = var.backendconfig.identityConfig.dataProtectionTokenExpiryInHours
+    "CorsConfiguration:AllowedOrigins:0" = azurerm_storage_account.orsoarpadev.primary_blob_endpoint
+    "ClubConfiguration:Name" = var.backendconfig.clubConfig.name
+    "ClubConfiguration:Address" = var.backendconfig.clubConfig.address
+    "ClubConfiguration:Email" = var.backendconfig.clubConfig.email
+    "ClubConfiguration:Phone" = var.backendconfig.clubConfig.phone
     "LocalizationConfiguration:DefaultCulture" = "en-GB"
     "LocalizationConfiguration:SupportedUiCultures:0" = "en"
     "LocalizationConfiguration:SupportedUiCultures:1" = "en-GB"
@@ -136,24 +136,6 @@ resource "azurerm_app_service" "orsoarpadev" {
   }
 
   tags = {
-    environment = "dev"
-  }
-
-  logs {
-    detailed_error_messages_enabled = true
-    failed_request_tracing_enabled = true
-    application_logs {
-        azure_blob_storage {
-            sas_url = "" // ToDo: Take from blob storage resource
-            retention_in_days = 3
-            level = "Warning"
-        }
-    }
-    http_logs {
-        azure_blob_storage {
-            sas_url = "" // ToDo: Take from blob storage resource
-            retention_in_days = 3
-        }
-    }
+    environment = var.environment
   }
 }
