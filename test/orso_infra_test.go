@@ -20,7 +20,7 @@ func TestArpaInfrastructure(t *testing.T) {
 			"environment": "test",
 		},
 	})
-	//	defer terraform.Destroy(t, terraformApplyOptions)
+	defer terraform.Destroy(t, terraformApplyOptions)
 
 	terraform.Init(t, terraformInitOptions)
 	terraform.Apply(t, terraformApplyOptions)

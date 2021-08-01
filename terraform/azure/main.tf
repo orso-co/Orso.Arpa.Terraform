@@ -78,12 +78,12 @@ resource "azurerm_app_service" "arpa" {
   app_service_plan_id = azurerm_app_service_plan.arpa.id
   https_only = true
 
-  site_config {
-    dotnet_framework_version = "v5.0"
-    scm_type                 = "GitHub"
-    http2_enabled = true
-    health_check_path = "/health"
-  }
+  #  site_config {
+  #   dotnet_framework_version = "v5.0"
+  #   scm_type                 = "GitHub"
+  #   http2_enabled = true
+  #   health_check_path = "/health"
+  #  }
 
   app_settings = {
     "Logging:IncludeScopes" = tostring(var.backendconfig.logConfig.includeScopes)
