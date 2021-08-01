@@ -17,3 +17,7 @@ To use the terraform cli on the repo you have to change the current directory to
 ## Update documentation
 
 `terraform-docs markdown --footer-from docs/footer.md --header-from docs/header.md . > README.md`
+
+## Run test
+
+`go test`

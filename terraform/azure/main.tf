@@ -86,14 +86,14 @@ resource "azurerm_app_service" "arpa" {
   }
 
   app_settings = {
-    "Logging:IncludeScopes" = var.backendconfig.logConfig.includeScopes
+    "Logging:IncludeScopes" = tostring(var.backendconfig.logConfig.includeScopes)
     "Logging:LogLevel:Default" = var.backendconfig.logConfig.logLevel.default
     "Logging:LogLevel:Microsoft" = var.backendconfig.logConfig.logLevel.microsoft
     "Logging:LogLevel:Microsoft.Hosting.Lifetime" = var.backendconfig.logConfig.logLevel.microsoftHostingLifetime
     "Logging:LogLevel:Microsoft.EntityFrameworkCore.Database.Command" = var.backendconfig.logConfig.logLevel.microsoftEntityFrameworkCoreDatabaseCommand
     "EmailConfiguration:From" = var.backendconfig.emailConfig.from
     "EmailConfiguration:SmtpServer" = var.backendconfig.emailConfig.smtpServer
-    "EmailConfiguration:Port" = var.backendconfig.emailConfig.port
+    "EmailConfiguration:Port" = tostring(var.backendconfig.emailConfig.port)
     "EmailConfiguration:Username" = var.backendconfig.emailConfig.userName
     "EmailConfiguration:Password" = var.backendconfig.emailConfig.password
     "EmailConfiguration:DefaultSubject" = var.backendconfig.emailConfig.defaultSubject
