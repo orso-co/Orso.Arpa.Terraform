@@ -1,7 +1,7 @@
 terraform {
   backend "azurerm" {
     resource_group_name  = "orso-global-rg" // this has to be adapted manually if used for a different club
-    storage_account_name = "orsoglobalsa" // this has to be adapted manually if used for a different club
+    storage_account_name = "orsoglobalsa"   // this has to be adapted manually if used for a different club
     container_name       = "tfstate"
   }
 }
@@ -28,11 +28,11 @@ module "app_service_name" {
 }
 
 module "storage_account_name" {
-  source   = "gsoft-inc/naming/azurerm//modules/storage/storage_account"
-  name     = "frontend"
-  prefixes = [var.club, "arpa", var.environment]
+  source    = "gsoft-inc/naming/azurerm//modules/storage/storage_account"
+  name      = "frontend"
+  prefixes  = [var.club, "arpa", var.environment]
   separator = ""
-  suffixes = ["sa"]
+  suffixes  = ["sa"]
 }
 
 resource "azurerm_resource_group" "arpa" {
@@ -47,7 +47,7 @@ resource "azurerm_storage_account" "arpa" {
   account_tier             = "Standard"
   account_replication_type = "LRS"
   static_website {
-    index_document = "index.html"
+    index_document     = "index.html"
     error_404_document = "index.html"
   }
 
@@ -76,7 +76,7 @@ resource "azurerm_app_service" "arpa" {
   location            = azurerm_resource_group.arpa.location
   resource_group_name = azurerm_resource_group.arpa.name
   app_service_plan_id = azurerm_app_service_plan.arpa.id
-  https_only = true
+  https_only          = true
 
   #  site_config {
   #   dotnet_framework_version = "v5.0"
@@ -86,47 +86,47 @@ resource "azurerm_app_service" "arpa" {
   #  }
 
   app_settings = {
-    "Logging:IncludeScopes" = tostring(var.backendconfig.logConfig.includeScopes)
-    "Logging:LogLevel:Default" = var.backendconfig.logConfig.logLevel.default
-    "Logging:LogLevel:Microsoft" = var.backendconfig.logConfig.logLevel.microsoft
-    "Logging:LogLevel:Microsoft.Hosting.Lifetime" = var.backendconfig.logConfig.logLevel.microsoftHostingLifetime
+    "Logging:IncludeScopes"                                           = tostring(var.backendconfig.logConfig.includeScopes)
+    "Logging:LogLevel:Default"                                        = var.backendconfig.logConfig.logLevel.default
+    "Logging:LogLevel:Microsoft"                                      = var.backendconfig.logConfig.logLevel.microsoft
+    "Logging:LogLevel:Microsoft.Hosting.Lifetime"                     = var.backendconfig.logConfig.logLevel.microsoftHostingLifetime
     "Logging:LogLevel:Microsoft.EntityFrameworkCore.Database.Command" = var.backendconfig.logConfig.logLevel.microsoftEntityFrameworkCoreDatabaseCommand
-    "EmailConfiguration:From" = var.backendconfig.emailConfig.from
-    "EmailConfiguration:SmtpServer" = var.backendconfig.emailConfig.smtpServer
-    "EmailConfiguration:Port" = tostring(var.backendconfig.emailConfig.port)
-    "EmailConfiguration:Username" = var.backendconfig.emailConfig.userName
-    "EmailConfiguration:Password" = var.backendconfig.emailConfig.password
-    "EmailConfiguration:DefaultSubject" = var.backendconfig.emailConfig.defaultSubject
-    "JwtConfiguration:TokenKey" = var.backendconfig.jwtConfig.tokenKey
-    "JwtConfiguration:Issuer" = "https://localhost:5001" // ToDo: Take from app service / custom domain
-    "JwtConfiguration:Audience" = "https://localhost:5001" // ToDo: Take from app service / custom domain
-    "JwtConfiguration:AccessTokenExpiryInMinutes" = tostring(var.backendconfig.jwtConfig.accessTokenExpiryInMinutes)
-    "JwtConfiguration:RefreshTokenExpiryInDays" = tostring(var.backendconfig.jwtConfig.refreshTokenExpiryInDays)
-    "IdentityConfiguration:LockoutExpiryInMinutes" = tostring(var.backendconfig.identityConfig.lockoutExpiryInMinutes)
-    "IdentityConfiguration:MaxFailedLoginAttempts" = tostring(var.backendconfig.identityConfig.maxFailedLoginAttempts)
-    "IdentityConfiguration:EmailConfirmationTokenExpiryInDays" = tostring(var.backendconfig.identityConfig.emailConfirmationTokenExpiryInDays)
-    "IdentityConfiguration:DataProtectionTokenExpiryInHours" = tostring(var.backendconfig.identityConfig.dataProtectionTokenExpiryInHours)
-    "CorsConfiguration:AllowedOrigins:0" = azurerm_storage_account.arpa.primary_blob_endpoint
-    "ClubConfiguration:Name" = var.backendconfig.clubConfig.name
-    "ClubConfiguration:Address" = var.backendconfig.clubConfig.address
-    "ClubConfiguration:Email" = var.backendconfig.clubConfig.email
-    "ClubConfiguration:Phone" = var.backendconfig.clubConfig.phone
-    "LocalizationConfiguration:DefaultCulture" = "en-GB"
-    "LocalizationConfiguration:SupportedUiCultures:0" = "en"
-    "LocalizationConfiguration:SupportedUiCultures:1" = "en-GB"
-    "LocalizationConfiguration:SupportedUiCultures:2" = "de"
-    "LocalizationConfiguration:SupportedUiCultures:3" = "de-DE"
-    "LocalizationConfiguration:FallbackToParentCulture" = "true"
-    "APPINSIGHTS_INSTRUMENTATIONKEY" = "" // ToDo: Take from app insights resource
-    "APPINSIGHTS_PROFILERFEATURE_VERSION" = "disabled"
-    "APPINSIGHTS_SNAPSHOTFEATURE_VERSION" = "disabled"
-    "APPLICATIONINSIGHTS_CONNECTION_STRING" ="InstrumentationKey=" // ToDo: Take from app insights resource
-    "ApplicationInsightsAgent_EXTENSION_VERSION" = "~2"
-    "DiagnosticServices_EXTENSION_VERSION" = "disabled"
-    "InstrumentationEngine_EXTENSION_VERSION" = "disabled"
-    "SnapshotDebugger_EXTENSION_VERSION" = "disabled"
-    "XDT_MicrosoftApplicationInsights_BaseExtensions": "disabled"
-    "XDT_MicrosoftApplicationInsights_Mode": "default"
+    "EmailConfiguration:From"                                         = var.backendconfig.emailConfig.from
+    "EmailConfiguration:SmtpServer"                                   = var.backendconfig.emailConfig.smtpServer
+    "EmailConfiguration:Port"                                         = tostring(var.backendconfig.emailConfig.port)
+    "EmailConfiguration:Username"                                     = var.backendconfig.emailConfig.userName
+    "EmailConfiguration:Password"                                     = var.backendconfig.emailConfig.password
+    "EmailConfiguration:DefaultSubject"                               = var.backendconfig.emailConfig.defaultSubject
+    "JwtConfiguration:TokenKey"                                       = var.backendconfig.jwtConfig.tokenKey
+    "JwtConfiguration:Issuer"                                         = "https://localhost:5001" // ToDo: Take from app service / custom domain
+    "JwtConfiguration:Audience"                                       = "https://localhost:5001" // ToDo: Take from app service / custom domain
+    "JwtConfiguration:AccessTokenExpiryInMinutes"                     = tostring(var.backendconfig.jwtConfig.accessTokenExpiryInMinutes)
+    "JwtConfiguration:RefreshTokenExpiryInDays"                       = tostring(var.backendconfig.jwtConfig.refreshTokenExpiryInDays)
+    "IdentityConfiguration:LockoutExpiryInMinutes"                    = tostring(var.backendconfig.identityConfig.lockoutExpiryInMinutes)
+    "IdentityConfiguration:MaxFailedLoginAttempts"                    = tostring(var.backendconfig.identityConfig.maxFailedLoginAttempts)
+    "IdentityConfiguration:EmailConfirmationTokenExpiryInDays"        = tostring(var.backendconfig.identityConfig.emailConfirmationTokenExpiryInDays)
+    "IdentityConfiguration:DataProtectionTokenExpiryInHours"          = tostring(var.backendconfig.identityConfig.dataProtectionTokenExpiryInHours)
+    "CorsConfiguration:AllowedOrigins:0"                              = azurerm_storage_account.arpa.primary_blob_endpoint
+    "ClubConfiguration:Name"                                          = var.backendconfig.clubConfig.name
+    "ClubConfiguration:Address"                                       = var.backendconfig.clubConfig.address
+    "ClubConfiguration:Email"                                         = var.backendconfig.clubConfig.email
+    "ClubConfiguration:Phone"                                         = var.backendconfig.clubConfig.phone
+    "LocalizationConfiguration:DefaultCulture"                        = "en-GB"
+    "LocalizationConfiguration:SupportedUiCultures:0"                 = "en"
+    "LocalizationConfiguration:SupportedUiCultures:1"                 = "en-GB"
+    "LocalizationConfiguration:SupportedUiCultures:2"                 = "de"
+    "LocalizationConfiguration:SupportedUiCultures:3"                 = "de-DE"
+    "LocalizationConfiguration:FallbackToParentCulture"               = "true"
+    "APPINSIGHTS_INSTRUMENTATIONKEY"                                  = "" // ToDo: Take from app insights resource
+    "APPINSIGHTS_PROFILERFEATURE_VERSION"                             = "disabled"
+    "APPINSIGHTS_SNAPSHOTFEATURE_VERSION"                             = "disabled"
+    "APPLICATIONINSIGHTS_CONNECTION_STRING"                           = "InstrumentationKey=" // ToDo: Take from app insights resource
+    "ApplicationInsightsAgent_EXTENSION_VERSION"                      = "~2"
+    "DiagnosticServices_EXTENSION_VERSION"                            = "disabled"
+    "InstrumentationEngine_EXTENSION_VERSION"                         = "disabled"
+    "SnapshotDebugger_EXTENSION_VERSION"                              = "disabled"
+    "XDT_MicrosoftApplicationInsights_BaseExtensions" : "disabled"
+    "XDT_MicrosoftApplicationInsights_Mode" : "default"
   }
 
   connection_string {
