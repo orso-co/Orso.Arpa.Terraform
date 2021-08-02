@@ -19,7 +19,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  build:
+  terraform-test:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
@@ -51,7 +51,7 @@ jobs:
       - name: AZ login using Service Prinicipal
         shell: bash
         run: |
-          az login --service-principal -u ${{ env.SP_ID }} -p ${{ env.SP_PASSWD }} --tenant ${{ env.TENANT_ID }}
+          az login --service-principal -u ${{ secrets.SP_ID }} -p ${{ secrets.SP_PASSWD }} --tenant ${{ secrets.TENANT_ID }}
 
       - name: Run Testcases
         shell: bash
