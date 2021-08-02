@@ -6,7 +6,7 @@ name: PR Arpa Infrastructure
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
   pull_request:
-    branches: 
+    branches:
       - main
     paths:
       - 'terraform/azure/**'
@@ -37,7 +37,7 @@ jobs:
       - name: Terraform format check
         id: tfformat
         run: terraform fmt -check -recursive
-        
+
       - name: Comment Terraform results in PR
         uses: marocchino/sticky-pull-request-comment@v2
         if: always()
@@ -47,13 +47,13 @@ jobs:
           message: |
             #### Terraform Format check: `${{ steps.tfformat.outcome }}`
             *Pusher: @${{ github.actor }}, Action: `${{ github.event_name }}`*
-      
+
       - name: AZ login using Service Prinicipal
         shell: bash
         run: |
           az login -u ${{ env.SP_ID }} -p ${{ env.SP_PASSWD }}
           az account set -s ${{ env.SUBSCRIPTION_ID }}
-          
+
       - name: Run Testcases
         shell: bash
         run: |
