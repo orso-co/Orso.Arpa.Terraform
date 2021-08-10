@@ -1,6 +1,6 @@
 # Orso.Arpa.Terraform
 
-To use the terraform cli on the repo you have to change the current directory to terraform\azure
+To use the terraform cli on the repo you have to change the current directory to `terraform\azure`
 
 ## Init
 
@@ -21,3 +21,11 @@ To use the terraform cli on the repo you have to change the current directory to
 ## Run test
 
 `go test`
+
+## naming convention
+
+use modules from <https://github.com/gsoft-inc/terraform-azurerm-naming>
+
+## format code
+
+`terraform fmt`
