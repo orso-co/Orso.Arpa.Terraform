@@ -20,6 +20,13 @@ module "app_service_plan_name" {
   suffixes = ["asp"]
 }
 
+module "application_insights_name" {
+  source   = "../../modules/application_insights_name"
+  name     = "infra"
+  prefixes = [var.club, "arpa", var.environment]
+  suffixes = ["ai"]
+}
+
 module "app_service_name" {
   source   = "gsoft-inc/naming/azurerm//modules/web/web_app"
   name     = "infra"
@@ -54,6 +61,13 @@ resource "azurerm_storage_account" "arpa" {
   tags = {
     environment = var.environment
   }
+}
+
+resource "azurerm_application_insights" "arpa" {
+  name                = module.application_insights_name.result
+  location            = azurerm_resource_group.arpa.location
+  resource_group_name = azurerm_resource_group.arpa.name
+  application_type    = "web"
 }
 
 resource "azurerm_app_service_plan" "arpa" {
@@ -117,10 +131,10 @@ resource "azurerm_app_service" "arpa" {
     "LocalizationConfiguration:SupportedUiCultures:2"                 = "de"
     "LocalizationConfiguration:SupportedUiCultures:3"                 = "de-DE"
     "LocalizationConfiguration:FallbackToParentCulture"               = "true"
-    "APPINSIGHTS_INSTRUMENTATIONKEY"                                  = "" // ToDo: Take from app insights resource
+    "APPINSIGHTS_INSTRUMENTATIONKEY"                                  = azurerm_application_insights.arpa.instrumentation_key
     "APPINSIGHTS_PROFILERFEATURE_VERSION"                             = "disabled"
     "APPINSIGHTS_SNAPSHOTFEATURE_VERSION"                             = "disabled"
-    "APPLICATIONINSIGHTS_CONNECTION_STRING"                           = "InstrumentationKey=" // ToDo: Take from app insights resource
+    "APPLICATIONINSIGHTS_CONNECTION_STRING"                           = azurerm_application_insights.arpa.connection_string
     "ApplicationInsightsAgent_EXTENSION_VERSION"                      = "~2"
     "DiagnosticServices_EXTENSION_VERSION"                            = "disabled"
     "InstrumentationEngine_EXTENSION_VERSION"                         = "disabled"
