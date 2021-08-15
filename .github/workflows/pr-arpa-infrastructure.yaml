@@ -19,7 +19,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  build:
+  terraform-test:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
@@ -27,7 +27,7 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout code
-      - uses: actions/checkout@v2
+        uses: actions/checkout@v2
 
       - name: Set up Go
         uses: actions/setup-go@v2
@@ -51,10 +51,14 @@ jobs:
       - name: AZ login using Service Prinicipal
         shell: bash
         run: |
-          az login -u ${{ env.SP_ID }} -p ${{ env.SP_PASSWD }}
-          az account set -s ${{ env.SUBSCRIPTION_ID }}
+          az login --service-principal -u ${{ secrets.SP_ID }} -p ${{ secrets.SP_PASSWD }} --tenant ${{ secrets.TENANT_ID }}
 
       - name: Run Testcases
+        env:
+          ARM_CLIENT_ID: ${{ secrets.SP_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.SP_PASSWD }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.TENANT_ID }}
         shell: bash
         run: |
           echo "Running tests from $GITHUB_WORKSPACE/test"

@@ -9,19 +9,21 @@ import (
 func TestArpaInfrastructure(t *testing.T) {
 	terraformInitOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../terraform/azure",
-		Vars: map[string]interface{}{
-			"backend-config": "key=orso/infra/test/terraform.tfstate",
+		BackendConfig: map[string]interface{}{
+			"key": "orso/infra/test/terraform.tfstate",
 		},
+		PlanFilePath: "terraform.plan",
 	})
 	terraformApplyOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../terraform/azure",
 		Vars: map[string]interface{}{
-			"location":    "West Europe",
+			"location":    "Germany West Central",
 			"environment": "test",
 		},
+		PlanFilePath: "terraform.plan",
 	})
 	defer terraform.Destroy(t, terraformApplyOptions)
 
-	terraform.Init(t, terraformInitOptions)
+	terraform.InitAndPlan(t, terraformInitOptions)
 	terraform.Apply(t, terraformApplyOptions)
 }
