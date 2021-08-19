@@ -27,7 +27,7 @@ variable "dbconfig" {
   })
   default = {
     username     = "pleasechangeme"
-    password     = "pleasechangeme"
+    password     = "p1easeChangeMe!"
     sku          = "B_Gen5_1"
     storage      = 51200
     databaseName = "orso-arpa"
