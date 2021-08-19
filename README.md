@@ -20,7 +20,7 @@ To use the terraform cli on the repo you have to change the current directory to
 
 ## Run test
 
-`go test`
+`go test` (must be executed within the test folder)
 
 ## naming convention
 

@@ -16,6 +16,24 @@ variable "club" {
   default     = "orso"
 }
 
+variable "dbconfig" {
+  description = "Settings for the postgresql db server"
+  type = object({
+    username     = string // ToDo: Take from key vault
+    password     = string // ToDo: Take from key vault
+    sku          = string
+    storage      = number
+    databaseName = string
+  })
+  default = {
+    username     = "pleasechangeme"
+    password     = "pleasechangeme"
+    sku          = "B_Gen5_1"
+    storage      = 51200
+    databaseName = "orso-arpa"
+  }
+}
+
 variable "backendconfig" {
   description = "appsettings"
   type = object({
