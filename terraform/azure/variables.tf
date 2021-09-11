@@ -110,7 +110,7 @@ locals {
       }
     }
   })
-  dbconfig = defaults(var.dbconfig,  {
+  dbconfig = defaults(var.dbconfig, {
     username     = "pleasechangeme"
     password     = "p1easeChangeMe!"
     sku          = "B_Gen5_1"
