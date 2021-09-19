@@ -27,9 +27,9 @@ variable "dbconfig" {
   type = object({
     username     = string // ToDo: Take from key vault
     password     = string // ToDo: Take from key vault
-    sku          = string
-    storage      = number
     databaseName = string
+    sku          = optional(string)
+    storage      = optional(number)
   })
 }
 
@@ -111,11 +111,8 @@ locals {
     }
   })
   dbconfig = defaults(var.dbconfig, {
-    username     = "pleasechangeme"
-    password     = "p1easeChangeMe!"
-    sku          = "B_Gen5_1"
-    storage      = 51200
-    databaseName = "orso-arpa"
+    sku     = "B_Gen5_1"
+    storage = 51200
   })
 }
 

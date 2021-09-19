@@ -1,10 +1,37 @@
 package test
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/gruntwork-io/terratest/modules/terraform"
 )
+
+type DbConfiguration struct {
+	Username     string `json:"username"`
+	Password     string `json:"password"`
+	DatabaseName string `json:"databaseName"`
+}
+
+type InputVars struct {
+	//Blueprint configurations
+	DbConfig DbConfiguration `json:"dbconfig"`
+}
+
+var testInputVariables = InputVars{
+	DbConfig: {
+		Username: "pleasechangeme",
+		Password: "p1easeChangeMe!",
+		Database: "orso-arpa",
+	},
+}
+
+func getTestVariables(vars InputVars) map[string]interface{} {
+	in, _ := json.Marshal(vars)
+	var out map[string]interface{}
+	json.Unmarshal(in, &out)
+	return out
+}
 
 func TestArpaInfrastructure(t *testing.T) {
 	terraformInitOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
@@ -12,6 +39,7 @@ func TestArpaInfrastructure(t *testing.T) {
 		BackendConfig: map[string]interface{}{
 			"key": "orso/infra/test/terraform.tfstate",
 		},
+		Vars:         getTestVariables(testInputVariables),
 		PlanFilePath: "terraform.plan",
 	})
 	terraformApplyOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
