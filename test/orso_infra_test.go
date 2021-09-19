@@ -14,8 +14,9 @@ type DbConfiguration struct {
 }
 
 type InputVars struct {
-	//Blueprint configurations
-	DbConfig DbConfiguration `json:"dbconfig"`
+	DbConfig    DbConfiguration `json:"dbconfig"`
+	Location    string          `json:"location"`
+	Environment string          `json:"environment"`
 }
 
 var testInputVariables = InputVars{
@@ -24,6 +25,8 @@ var testInputVariables = InputVars{
 		Password:     "p1easeChangeMe!",
 		DatabaseName: "orso-arpa",
 	},
+	Location:    "Germany West Central",
+	Environment: "test",
 }
 
 func getTestVariables(vars InputVars) map[string]interface{} {
@@ -39,15 +42,11 @@ func TestArpaInfrastructure(t *testing.T) {
 		BackendConfig: map[string]interface{}{
 			"key": "orso/infra/test/terraform.tfstate",
 		},
-		Vars:         getTestVariables(testInputVariables),
 		PlanFilePath: "terraform.plan",
 	})
 	terraformApplyOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../terraform/azure",
-		Vars: map[string]interface{}{
-			"location":    "Germany West Central",
-			"environment": "test",
-		},
+		Vars:         getTestVariables(testInputVariables),
 		PlanFilePath: "terraform.plan",
 	})
 	defer terraform.Destroy(t, terraformApplyOptions)
