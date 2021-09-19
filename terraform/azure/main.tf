@@ -97,12 +97,12 @@ resource "azurerm_postgresql_server" "arpa" {
   location            = azurerm_resource_group.arpa.location
   resource_group_name = azurerm_resource_group.arpa.name
 
-  administrator_login          = var.dbconfig.username
-  administrator_login_password = var.dbconfig.password
+  administrator_login          = local.dbconfig.username
+  administrator_login_password = local.dbconfig.password
 
-  sku_name   = var.dbconfig.sku
+  sku_name   = local.dbconfig.sku
   version    = "11"
-  storage_mb = var.dbconfig.storage
+  storage_mb = local.dbconfig.storage
 
   backup_retention_days        = 7
   geo_redundant_backup_enabled = false
@@ -173,7 +173,7 @@ resource "azurerm_app_service" "arpa" {
   connection_string {
     name  = "PostgreSQLConnection"
     type  = "Custom"
-    value = "host=${azurerm_postgresql_server.arpa.name}.postgres.database.azure.com;port=5432;User Id=${azurerm_postgresql_server.arpa.administrator_login}@${azurerm_postgresql_server.arpa.name};password=${azurerm_postgresql_server.arpa.administrator_login_password};database=${var.dbconfig.databaseName};Ssl Mode=Require;"
+    value = "host=${azurerm_postgresql_server.arpa.name}.postgres.database.azure.com;port=5432;User Id=${azurerm_postgresql_server.arpa.administrator_login}@${azurerm_postgresql_server.arpa.name};password=${azurerm_postgresql_server.arpa.administrator_login_password};database=${local.dbconfig.databaseName};Ssl Mode=Require;"
   }
 
   tags = {
