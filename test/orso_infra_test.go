@@ -19,10 +19,10 @@ type InputVars struct {
 }
 
 var testInputVariables = InputVars{
-	DbConfig: {
-		Username: "pleasechangeme",
-		Password: "p1easeChangeMe!",
-		Database: "orso-arpa",
+	DbConfig: DbConfiguration{
+		Username:     "pleasechangeme",
+		Password:     "p1easeChangeMe!",
+		DatabaseName: "orso-arpa",
 	},
 }
 
