@@ -42,6 +42,7 @@ func TestArpaInfrastructure(t *testing.T) {
 		BackendConfig: map[string]interface{}{
 			"key": "orso/infra/test/terraform.tfstate",
 		},
+		Vars:         getTestVariables(testInputVariables),
 		PlanFilePath: "terraform.plan",
 	})
 	terraformApplyOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
