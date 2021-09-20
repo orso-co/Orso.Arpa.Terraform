@@ -1,3 +1,9 @@
+terraform {
+  # Optional attributes and the defaults function are
+  # both experimental, so we must opt in to the experiment.
+  experiments = [module_variable_optional_attrs]
+}
+
 variable "environment" {
   type        = string
   description = "Name of the system or environment"
@@ -14,6 +20,17 @@ variable "club" {
   type        = string
   description = "The name of the club the installation is for"
   default     = "orso"
+}
+
+variable "dbconfig" {
+  description = "Settings for the postgresql db server"
+  type = object({
+    username     = string // ToDo: Take from key vault
+    password     = string // ToDo: Take from key vault
+    databaseName = string
+    sku          = optional(string)
+    storage      = optional(number)
+  })
 }
 
 variable "backendconfig" {
@@ -54,7 +71,10 @@ variable "backendconfig" {
       phone   = string
     })
   })
-  default = {
+}
+
+locals {
+  backendconfig = defaults(var.backendconfig, {
     clubConfig = {
       address = "Schwarzwaldstr. 9-11, 79117 Freiburg"
       email   = "mail@orso.co"
@@ -89,5 +109,17 @@ variable "backendconfig" {
         microsoftHostingLifetime                    = "Information"
       }
     }
-  }
+  })
+  dbconfig = defaults(var.dbconfig, {
+    sku     = "B_Gen5_1"
+    storage = 51200
+  })
+}
+
+output "backendconfig" {
+  value = local.backendconfig
+}
+
+output "dbconfig" {
+  value = local.dbconfig
 }

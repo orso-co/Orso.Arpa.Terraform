@@ -27,6 +27,13 @@ module "application_insights_name" {
   suffixes = ["ai"]
 }
 
+module "postgresql_server_name" {
+  source   = "../../modules/postgresql_server_name"
+  name     = "infra"
+  prefixes = [var.club, "arpa", var.environment]
+  suffixes = ["pgs"]
+}
+
 module "app_service_name" {
   source   = "gsoft-inc/naming/azurerm//modules/web/web_app"
   name     = "infra"
@@ -83,6 +90,26 @@ resource "azurerm_app_service_plan" "arpa" {
   tags = {
     environment = var.environment
   }
+}
+
+resource "azurerm_postgresql_server" "arpa" {
+  name                = module.postgresql_server_name.result
+  location            = azurerm_resource_group.arpa.location
+  resource_group_name = azurerm_resource_group.arpa.name
+
+  administrator_login          = local.dbconfig.username
+  administrator_login_password = local.dbconfig.password
+
+  sku_name   = local.dbconfig.sku
+  version    = "11"
+  storage_mb = local.dbconfig.storage
+
+  backup_retention_days        = 7
+  geo_redundant_backup_enabled = false
+  auto_grow_enabled            = true
+
+  ssl_enforcement_enabled          = true
+  ssl_minimal_tls_version_enforced = "TLS1_2"
 }
 
 resource "azurerm_app_service" "arpa" {
@@ -146,10 +173,18 @@ resource "azurerm_app_service" "arpa" {
   connection_string {
     name  = "PostgreSQLConnection"
     type  = "Custom"
-    value = "Server=some-server.mydomain.com;Integrated Security=SSPI" // ToDo: Take from postgreSQL resource
+    value = "host=${azurerm_postgresql_server.arpa.name}.postgres.database.azure.com;port=5432;User Id=${azurerm_postgresql_server.arpa.administrator_login}@${azurerm_postgresql_server.arpa.name};password=${azurerm_postgresql_server.arpa.administrator_login_password};database=${local.dbconfig.databaseName};Ssl Mode=Require;"
   }
 
   tags = {
     environment = var.environment
   }
+}
+
+resource "azurerm_postgresql_firewall_rule" "arpa" {
+  name                = "AppService"
+  resource_group_name = azurerm_resource_group.arpa.name
+  server_name         = azurerm_postgresql_server.arpa.name
+  start_ip_address    = element(split(",", azurerm_app_service.arpa.outbound_ip_addresses), 0)
+  end_ip_address      = element(split(",", azurerm_app_service.arpa.outbound_ip_addresses), 0)
 }
